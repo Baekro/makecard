@@ -792,8 +792,13 @@
 
         .name-block {
             display: flex;
-            align-items: baseline;
-            gap: 6px;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .name-row {
+            display: flex;
+            align-items: center;
         }
 
         .d-name {
@@ -1129,7 +1134,7 @@
                             </label>
                             <label
                                 style="display:flex;align-items:center;gap:4px;font-size:.7rem;color:#999;cursor:pointer;">
-                                <input type="radio" name="kw-text" value="dark" onchange="setKwStyle()"> #2C2C2E
+                                <input type="radio" name="kw-text" value="dark" onchange="setKwStyle()"> 다크
                             </label>
                         </div>
                     </div>
@@ -1321,7 +1326,7 @@
                 </div>
             </div>
 
-            <button class="btn-reset" onclick="doReset()">⚠️ 전체 초기화</button>
+            <button class="btn-reset" onclick="doReset()">전체 초기화</button>
 
         </div>
 
@@ -1350,9 +1355,11 @@
 
                 <div class="keyword-positioner" id="keyword-positioner">
                     <div class="name-block">
-                        <div id="d-name" class="d-name">캐릭터 이름</div>
+                        <div class="name-row">
+                            <div id="d-name" class="d-name">캐릭터 이름</div>
+                            <div id="d-palette" class="d-palette"></div>
+                        </div>
                         <div id="d-sub" class="d-sub">보조 문구</div>
-                        <div id="d-palette" class="d-palette"></div>
                     </div>
                     <div class="keyword-zone" id="keyword-zone">
                         <span class="kchip">#특징</span>
@@ -1415,7 +1422,7 @@
     <script>
 
         console.log(`
-%c                                                          
+%c                      
    캐릭터 메인트윗 생성기
    백식당@BAEKSIKDANG
 `, 'color: #71AEFF; font-family: monospace; font-size: 13px; font-weight: bold;');
