@@ -661,7 +661,6 @@
         .quote-bubble.bubble-white {
             background: #fff;
             color: #2C2C2E;
-            border: 1.5px solid #ddd;
         }
 
         .quote-bubble.bubble-dark {
@@ -777,6 +776,8 @@
             background: #fff;
             border-radius: 0 0 8px 8px;
             padding-bottom: 0;
+            padding-left: 16px;
+            padding-right: 16px;
         }
 
         .keyword-positioner {
@@ -834,6 +835,7 @@
             align-items: center;
             gap: 6px;
             max-width: 420px;
+            margin-left: -4px;
         }
 
         .kchip {
@@ -1069,7 +1071,7 @@
                 <div class="acc-inner">
                     <div class="ef"><label>캐릭터 이름</label><input type="text" id="e-cname" value="캐릭터 이름"
                             oninput="sync()"></div>
-                    <div class="ef"><label>보조 문구 / 칭호</label><input type="text" id="e-csub" value="보조 문구"
+                    <div class="ef"><label>문구 추가 / 칭호</label><input type="text" id="e-csub" value="이 문구는 비워둘 시 숨겨집니다"
                             oninput="sync()"></div>
                     <div class="trow" style="margin-top:6px;">
                         <label class="toggle"><input type="checkbox" id="tog-nopal" onchange="sync()"><span
@@ -1175,7 +1177,7 @@
                             <label
                                 style="display:flex;align-items:center;gap:4px;font-size:.7rem;color:#999;cursor:pointer;">
                                 <input type="radio" name="bubble-font" value="dark"
-                                    onchange="setBubbleFontColor(this.value)"> #2C2C2E
+                                    onchange="setBubbleFontColor(this.value)"> 다크
                             </label>
                         </div>
                     </div>
@@ -1311,6 +1313,11 @@
                                     class="tslider"></span></label>
                             <span>배경 이미지 제거</span>
                         </div>
+                        <div class="trow" style="margin-top:7px;">
+                            <label class="toggle"><input type="checkbox" id="tog-nobgfilter"
+                                    onchange="renderImgs()"><span class="tslider"></span></label>
+                            <span>배경 이미지 필터 끄기</span>
+                        </div>
                     </div>
                     <div class="ef">
                         <label>배경 대체 색상</label>
@@ -1356,7 +1363,7 @@
                             <div id="d-name" class="d-name">캐릭터 이름</div>
                             <div id="d-palette" class="d-palette"></div>
                         </div>
-                        <div id="d-sub" class="d-sub">보조 문구</div>
+                        <div id="d-sub" class="d-sub">문구 추가/칭호</div>
                     </div>
                     <div class="keyword-zone" id="keyword-zone">
                         <span class="kchip">#특징</span>
@@ -1545,7 +1552,21 @@
                 avCircle.innerHTML = '<div class="av-ring"></div>';
                 if (imgs.avatar) {
                     const img = document.createElement('img');
-                    img.src = imgs.avatar; avCircle.appendChild(img);
+                    img.style.position = 'absolute';
+                    img.style.top = '50%';
+                    img.style.left = '50%';
+                    img.style.transform = 'translate(-50%, -50%)';
+                    img.onload = () => {
+                        if (img.naturalWidth > img.naturalHeight) {
+                            img.style.height = '100%';
+                            img.style.width = 'auto';
+                        } else {
+                            img.style.width = '100%';
+                            img.style.height = 'auto';
+                        }
+                    };
+                    img.src = imgs.avatar;
+                    avCircle.appendChild(img);
                 } else {
                     const ph = document.createElement('span');
                     ph.className = 'av-ph'; ph.textContent = '이미지';
@@ -1600,17 +1621,21 @@
             }
 
             const bgImg = $id('band-bg-img');
+            const overlay = document.querySelector('.band-bg-overlay');
             const grayBandEl = $id('gray-band');
             const bgColor = $id('bgcp').value;
+            const noBgFilter = $id('tog-nobgfilter') ? $id('tog-nobgfilter').checked : false;
 
             if (!noBg && imgs.bg) {
                 bgImg.style.backgroundImage = `url(${imgs.bg})`;
                 bgImg.classList.add('on');
                 grayBandEl.style.backgroundColor = '';
+                if (overlay) overlay.style.display = noBgFilter ? 'none' : 'block';
             } else {
                 bgImg.style.backgroundImage = 'none';
                 bgImg.classList.remove('on');
                 grayBandEl.style.backgroundColor = bgColor;
+                if (overlay) overlay.style.display = 'none';
             }
         }
 
@@ -1783,7 +1808,7 @@
             }).then(canvas => {
                 canvas.toBlob(blob => {
                     const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a'); a.href = url; a.download = 'character-profile.png';
+                    const a = document.createElement('a'); a.href = url; a.download = 'baeksikdang-profile.png';
                     document.body.appendChild(a); a.click(); document.body.removeChild(a);
                     setTimeout(() => URL.revokeObjectURL(url), 1000);
                 }, 'image/png');
@@ -1806,7 +1831,7 @@
             'c1h', 'c2h', 'palh1', 'palh2', 'palh3', 'palh4', 'palh5', 'bgch'
         ];
         const RANGE_FIELDS = ['ga', 'sd-size', 'noav-padding'];
-        const TOGGLE_FIELDS = ['tog-noav', 'tog-noch', 'tog-nobg', 'tog-nookng', 'tog-nopal'];
+        const TOGGLE_FIELDS = ['tog-noav', 'tog-noch', 'tog-nobg', 'tog-nobgfilter', 'tog-nookng', 'tog-nopal'];
         const SELECT_FIELDS = ['e-pal-count'];
 
         function saveToStorage() {
